@@ -1,131 +1,616 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI Content Pro</title>
-  <!-- Tailwind CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- React & ReactDOM -->
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-  <!-- Babel for JSX -->
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Content Writer & Image Generator</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Use Inter font for a clean, modern look */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Custom spinner for the loading state */
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #ffffff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Custom styles for the hamburger menu icon */
+        .hamburger-icon span {
+            display: block;
+            height: 2px;
+            width: 24px;
+            background-color: #d1d5db; /* gray-400 */
+            transition: all 0.3s ease-in-out;
+        }
+
+        .hamburger-icon span:not(:last-child) {
+            margin-bottom: 4px;
+        }
+        
+        /* Style for the generated image to make it responsive */
+        #generated-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 1rem; /* rounded-xl */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
+        }
+
+        /* Responsive styling for the image container */
+        .image-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 200px; /* Ensures space even when image is not loaded */
+        }
+    </style>
 </head>
-<body class="bg-gradient-to-br from-blue-100 to-indigo-200 dark:from-gray-900 dark:to-gray-800">
-  <div id="root"></div>
+<body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col items-center">
 
-  <script type="text/babel">
-    const { useState, useEffect } = React;
-
-    const App = () => {
-      const [prompt, setPrompt] = useState('');
-      const [generatedContent, setGeneratedContent] = useState('');
-      const [generatedImage, setGeneratedImage] = useState(null);
-      const [isLoading, setIsLoading] = useState(false);
-      const [isImageLoading, setIsImageLoading] = useState(false);
-      const [isRefining, setIsRefining] = useState(false);
-      const [refinementPrompt, setRefinementPrompt] = useState('');
-      const [contentType, setContentType] = useState('Social Media Post');
-      const [length, setLength] = useState('Medium');
-      const [phone, setPhone] = useState('');
-      const [email, setEmail] = useState('');
-      const [address, setAddress] = useState('');
-      const [alertMessage, setAlertMessage] = useState(null);
-
-      useEffect(() => {
-        const savedPhone = localStorage.getItem('phone');
-        const savedEmail = localStorage.getItem('email');
-        const savedAddress = localStorage.getItem('address');
-        if(savedPhone) setPhone(savedPhone);
-        if(savedEmail) setEmail(savedEmail);
-        if(savedAddress) setAddress(savedAddress);
-      }, []);
-
-      useEffect(() => {
-        localStorage.setItem('phone', phone);
-        localStorage.setItem('email', email);
-        localStorage.setItem('address', address);
-      }, [phone,email,address]);
-
-      const handleGenerateContent = async () => {
-        if(!prompt.trim()){ setAlertMessage('Enter a prompt!'); return;}
-        setIsLoading(true); setGeneratedContent(''); setGeneratedImage(null);
-        // NOTE: API calls removed for live demo, you can add your API keys here.
-        setTimeout(()=> { setGeneratedContent("This is a demo generated content based on your prompt."); setIsLoading(false); }, 1000);
-      };
-
-      const handleGenerateImage = async () => {
-        if(!prompt.trim()){ setAlertMessage('Enter a prompt!'); return;}
-        setIsImageLoading(true); setGeneratedContent(''); setGeneratedImage(null);
-        setTimeout(()=> { setGeneratedImage("https://via.placeholder.com/400x300.png?text=Generated+Image"); setIsImageLoading(false); }, 1000);
-      };
-
-      const handleRefineContent = () => {
-        if(!generatedContent.trim() || !refinementPrompt.trim()){ setAlertMessage('Provide text and refinement!'); return;}
-        setIsRefining(true);
-        setTimeout(()=> { setGeneratedContent(generatedContent + " (Refined)"); setIsRefining(false); }, 1000);
-      };
-
-      const handleCopyContent = () => {
-        navigator.clipboard.writeText(generatedContent);
-        setAlertMessage("Copied to clipboard!");
-      };
-
-      const contentTypes = ['General', 'Blog Post', 'Email', 'Social Media Post', 'Product Description', 'Article'];
-      const lengths = ['Short', 'Medium', 'Long'];
-
-      return (
-        <div className="min-h-screen flex flex-col items-center justify-center p-4 font-sans">
-          {alertMessage && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-              <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-2xl flex flex-col items-center gap-4 border border-gray-300 dark:border-gray-600">
-                <p>{alertMessage}</p>
-                <button onClick={()=>setAlertMessage(null)} className="py-2 px-4 bg-blue-600 text-white rounded">OK</button>
-              </div>
-            </div>
-          )}
-
-          <div className="w-full max-w-5xl p-6 bg-white dark:bg-gray-800 rounded-3xl shadow-2xl border flex flex-col md:flex-row gap-8">
-            <div className="flex-1 flex flex-col gap-4">
-              <h1 className="text-3xl font-bold text-center text-blue-700 dark:text-blue-400">AI Content Pro</h1>
-              <textarea value={prompt} onChange={e=>setPrompt(e.target.value)} rows="4" placeholder="Enter prompt..." className="w-full p-3 border rounded"/>
-              <select value={contentType} onChange={e=>setContentType(e.target.value)} className="w-full p-2 border rounded">
-                {contentTypes.map(ct=><option key={ct}>{ct}</option>)}
-              </select>
-              <select value={length} onChange={e=>setLength(e.target.value)} className="w-full p-2 border rounded">
-                {lengths.map(l=> <option key={l}>{l}</option>)}
-              </select>
-              <input value={phone} onChange={e=>setPhone(e.target.value)} placeholder="Phone" className="w-full p-2 border rounded"/>
-              <input value={email} onChange={e=>setEmail(e.target.value)} placeholder="Email" className="w-full p-2 border rounded"/>
-              <input value={address} onChange={e=>setAddress(e.target.value)} placeholder="Address" className="w-full p-2 border rounded"/>
-              <div className="flex gap-2">
-                <button onClick={handleGenerateContent} className="flex-1 bg-blue-600 text-white p-2 rounded">{isLoading ? 'Generating...' : 'Generate Text'}</button>
-                <button onClick={handleGenerateImage} className="flex-1 bg-purple-600 text-white p-2 rounded">{isImageLoading ? 'Generating...' : 'Generate Image'}</button>
-              </div>
+    <!-- Top Navigation Menu Bar -->
+    <nav class="w-full bg-gray-800 p-4 shadow-xl">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+            <!-- Logo/Site Title -->
+            <div class="flex justify-between w-full sm:w-auto">
+                <a href="#home" class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
+                    ContentAI
+                </a>
+                <!-- Hamburger menu button for mobile -->
+                <button id="hamburger-button" class="sm:hidden text-gray-400 focus:outline-none">
+                    <div class="hamburger-icon">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </button>
             </div>
 
-            <div className="flex-1 flex flex-col gap-4">
-              {generatedImage && <img src={generatedImage} alt="Generated" className="w-full rounded"/>}
-              {generatedContent && (
-                <div className="bg-gray-100 dark:bg-gray-700 p-4 rounded">
-                  <pre>{generatedContent}</pre>
-                  <button onClick={handleCopyContent} className="mt-2 bg-green-600 text-white p-2 rounded">Copy</button>
-                </div>
-              )}
-              {generatedContent && (
-                <>
-                  <textarea value={refinementPrompt} onChange={e=>setRefinementPrompt(e.target.value)} placeholder="Refine prompt" className="w-full p-2 border rounded"/>
-                  <button onClick={handleRefineContent} className="bg-yellow-600 text-white p-2 rounded">{isRefining ? 'Refining...' : 'Refine'}</button>
-                </>
-              )}
+            <!-- Menu Links - Hidden on mobile by default -->
+            <div id="nav-menu" class="hidden sm:flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-8 text-gray-400 font-semibold w-full sm:w-auto text-center sm:text-left">
+                <a href="#home" id="nav-home" class="hover:text-purple-400 transition-colors duration-300">ပင်မစာမျက်နှာ</a>
+                <a href="#image-generator" id="nav-image-generator" class="hover:text-purple-400 transition-colors duration-300">ပုံဖန်တီးခြင်း</a>
+                <a href="#about" id="nav-about" class="hover:text-purple-400 transition-colors duration-300">အကြောင်း</a>
+                <a href="#services" id="nav-services" class="hover:text-purple-400 transition-colors duration-300">ဝန်ဆောင်မှုများ</a>
             </div>
-          </div>
         </div>
-      );
-    }
+    </nav>
 
-    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
-  </script>
+    <!-- Main Content Container -->
+    <div id="main-content" class="w-full max-w-4xl my-8 flex-1">
+        <!-- The content for each section will be injected here by JavaScript -->
+    </div>
+
+    <script>
+        // API key will be provided by the runtime environment.
+        const apiKey = "";
+        const TRANSLATION_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+        const IMAGE_GEN_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${apiKey}`;
+
+        // Get DOM elements
+        const hamburgerButton = document.getElementById('hamburger-button');
+        const navMenu = document.getElementById('nav-menu');
+        const mainContent = document.getElementById('main-content');
+        
+        // Function to handle API call with exponential backoff for retries
+        async function fetchWithExponentialBackoff(url, options, retries = 5, delay = 1000) {
+            try {
+                const response = await fetch(url, options);
+                if (response.status === 429 && retries > 0) {
+                    console.warn(`Too many requests, retrying in ${delay}ms...`);
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    return fetchWithExponentialBackoff(url, options, retries - 1, delay * 2);
+                }
+                if (!response.ok) {
+                    throw new Error(`API response error: ${response.statusText}`);
+                }
+                return response;
+            } catch (error) {
+                if (retries > 0) {
+                    console.error(`Fetch failed, retrying in ${delay}ms...`, error);
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    return fetchWithExponentialBackoff(url, options, retries - 1, delay * 2);
+                }
+                throw error;
+            }
+        }
+
+        // --- Content Generation Logic (Home Page) ---
+        async function generateContent() {
+            // Get DOM elements for the home page
+            const promptInput = document.getElementById('prompt-input');
+            const contentTypeSelect = document.getElementById('content-type-select');
+            const contentLengthSelect = document.getElementById('content-length-select');
+            const emojiSelect = document.getElementById('emoji-select');
+            const generateButton = document.getElementById('generate-button');
+            const loadingIndicator = document.getElementById('loading-indicator');
+            const resultContainer = document.getElementById('result-container');
+            const resultContent = document.getElementById('result-content');
+            const copyButton = document.getElementById('copy-button');
+            const editButton = document.getElementById('edit-button');
+
+            // Get the new contact info fields
+            const phoneNumberInput = document.getElementById('phone-number-input');
+            const emailInput = document.getElementById('email-input');
+            const addressInput = document.getElementById('address-input');
+
+            // Save contact info to localStorage
+            localStorage.setItem('phoneNumber', phoneNumberInput.value);
+            localStorage.setItem('email', emailInput.value);
+            localStorage.setItem('address', addressInput.value);
+
+            const prompt = promptInput.value.trim();
+            if (!prompt) {
+                resultContent.textContent = "ကျေးဇူးပြု၍ ခေါင်းစဉ်တစ်ခု ထည့်သွင်းပါ။";
+                resultContainer.classList.remove('hidden');
+                return;
+            }
+
+            const contentType = contentTypeSelect.value;
+            const contentLength = contentLengthSelect.value;
+            const addEmojis = emojiSelect.value === 'add-emojis';
+
+            // Build the core prompt
+            let fullPrompt = `Please generate only the content in the Burmese language for a ${contentLength} ${contentType} about "${prompt}". Do not include any introductory phrases, titles, or formatting such as bolding. Start directly with the content.`;
+
+            // Add contact info to be integrated
+            const phone = phoneNumberInput.value.trim();
+            const email = emailInput.value.trim();
+            const address = addressInput.value.trim();
+            
+            if (phone || email || address) {
+                fullPrompt += '\n\nThis is the contact information to integrate naturally into the content:';
+                if (phone) fullPrompt += ` Phone Number: ${phone}.`;
+                if (email) fullPrompt += ` Email Address: ${email}.`;
+                if (address) fullPrompt += ` Office Address: ${address}.`;
+                fullPrompt += ' Do not just append the information, but weave it into the text in a conversational way. For example, use phrases like "ဆက်သွယ်လိုပါက...", "အသေးစိတ်သိရှိလိုပါက...", or "လိပ်စာမှာ...ဖြစ်သည်။"';
+            }
+            
+            if (addEmojis) {
+                fullPrompt += " Add a relevant emoji at the beginning of each paragraph.";
+            }
+            
+            generateButton.disabled = true;
+            generateButton.textContent = "ဖန်တီးနေသည်...";
+            loadingIndicator.classList.remove('hidden');
+            resultContainer.classList.add('hidden');
+            resultContent.textContent = '';
+
+            try {
+                const payload = {
+                    contents: [{
+                        parts: [{ text: fullPrompt }]
+                    }]
+                };
+
+                const response = await fetchWithExponentialBackoff(TRANSLATION_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload),
+                });
+
+                const result = await response.json();
+                
+                let generatedText = '';
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    generatedText = result.candidates[0].content.parts[0].text;
+                } else {
+                    console.error("Unexpected API response structure:", result);
+                    generatedText = "တောင်းပန်ပါတယ်၊ အကြောင်းအရာ ဖန်တီး၍ မရပါ။ ကျေးဇူးပြု၍ အခြားခေါင်းစဉ်တစ်ခုဖြင့် ပြန်လည်စမ်းပါ။";
+                }
+
+                resultContent.textContent = generatedText;
+
+            } catch (error) {
+                console.error("Failed to fetch from Gemini API:", error);
+                resultContent.textContent = "တစ်ခုခုမှားယွင်းနေပါသည်။ သင့်အင်တာနက်ချိတ်ဆက်မှုကို စစ်ဆေးပါ သို့မဟုတ် နောက်မှ ပြန်လည်ကြိုးစားပါ။";
+            } finally {
+                generateButton.disabled = false;
+                generateButton.textContent = "Content ဖန်တီးပါ";
+                loadingIndicator.classList.add('hidden');
+                resultContainer.classList.remove('hidden');
+            }
+        }
+
+        // --- Image Generation Logic ---
+        async function generateImage() {
+            const promptInput = document.getElementById('image-prompt-input');
+            const generateButton = document.getElementById('image-generate-button');
+            const loadingIndicator = document.getElementById('image-loading-indicator');
+            const resultContainer = document.getElementById('image-result-container');
+            const resultImage = document.getElementById('generated-image');
+            const errorText = document.getElementById('image-error-text');
+            
+            const burmesePrompt = promptInput.value.trim();
+            if (!burmesePrompt) {
+                errorText.textContent = "ကျေးဇူးပြု၍ ပုံဖော်မယ့် ဖော်ပြချက်ကို ထည့်သွင်းပါ။";
+                resultContainer.classList.remove('hidden');
+                resultImage.classList.add('hidden');
+                errorText.classList.remove('hidden');
+                return;
+            }
+
+            // Show loading state
+            generateButton.disabled = true;
+            generateButton.textContent = "ပုံဖန်တီးနေသည်...";
+            loadingIndicator.classList.remove('hidden');
+            resultContainer.classList.add('hidden');
+            resultImage.classList.add('hidden');
+            errorText.classList.add('hidden');
+
+            try {
+                // Step 1: Translate the Burmese prompt to English using Gemini
+                const translationPrompt = `Translate this Burmese text into a detailed English image generation prompt, focusing on descriptive nouns, adjectives, and a clear scene description. For example, "လှပသော ပန်းခြံတစ်ခုတွင် ပန်းမျိုးစုံ ပွင့်နေသည်" should be translated as "a beautiful garden with various colorful flowers in full bloom, high detail, photorealistic." Text to translate: "${burmesePrompt}"`;
+                const translationPayload = {
+                    contents: [{
+                        parts: [{ text: translationPrompt }]
+                    }]
+                };
+
+                const translationResponse = await fetchWithExponentialBackoff(TRANSLATION_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(translationPayload),
+                });
+                
+                const translationResult = await translationResponse.json();
+                const englishPrompt = translationResult.candidates[0].content.parts[0].text.trim();
+
+                // Step 2: Generate the image using the translated English prompt
+                const imagePayload = {
+                    instances: { prompt: englishPrompt },
+                    parameters: { "sampleCount": 1 }
+                };
+                
+                const imageResponse = await fetchWithExponentialBackoff(IMAGE_GEN_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(imagePayload)
+                });
+                
+                const imageResult = await imageResponse.json();
+                
+                if (imageResult.predictions && imageResult.predictions.length > 0 && imageResult.predictions[0].bytesBase64Encoded) {
+                    const base64Data = imageResult.predictions[0].bytesBase64Encoded;
+                    const imageUrl = `data:image/png;base64,${base64Data}`;
+                    resultImage.src = imageUrl;
+                    resultImage.classList.remove('hidden');
+                } else {
+                    console.error("Unexpected image API response structure:", imageResult);
+                    errorText.textContent = "ပုံဖန်တီး၍ မရပါ။ ဖော်ပြချက်ကို ပြောင်းပြီး ထပ်မံကြိုးစားပါ။";
+                    errorText.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error("Failed to generate image:", error);
+                errorText.textContent = "တစ်ခုခုမှားယွင်းနေပါသည်။ ကျေးဇူးပြု၍ နောက်မှ ပြန်လည်ကြိုးစားပါ။";
+                errorText.classList.remove('hidden');
+            } finally {
+                generateButton.disabled = false;
+                generateButton.textContent = "ပုံဖန်တီးပါ";
+                loadingIndicator.classList.add('hidden');
+                resultContainer.classList.remove('hidden');
+            }
+        }
+
+        // --- Page Content Functions ---
+        
+        // Function to create the Home page content
+        function createHomePage() {
+            // Retrieve contact info from localStorage to pre-fill inputs
+            const phoneNumber = localStorage.getItem('phoneNumber') || '';
+            const email = localStorage.getItem('email') || '';
+            const address = localStorage.getItem('address') || '';
+            
+            return `
+            <div class="bg-gray-800 p-6 sm:p-8 md:p-10 rounded-3xl shadow-2xl w-full">
+                <header class="text-center mb-8">
+                    <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
+                        AI Content Writer
+                    </h1>
+                    <p class="mt-2 text-sm sm:text-base text-gray-400">
+                        ဉာဏ်ရည်တု၏စွမ်းအားဖြင့် ဆန်းသစ်သော အကြောင်းအရာများကို ဖန်တီးပါ။
+                    </p>
+                </header>
+                <div class="space-y-6">
+                    <div>
+                        <label for="prompt-input" class="block text-sm font-medium mb-2 text-gray-300">ခေါင်းစဉ်</label>
+                        <textarea
+                            id="prompt-input"
+                            class="w-full h-32 p-4 rounded-xl resize-none bg-gray-700 text-gray-200 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-300 placeholder-gray-500"
+                            placeholder="ဥပမာ၊ ကျန်းမာတဲ့လူနေမှုဘဝရဲ့ အကျိုးကျေးဇူးများ..."
+                        ></textarea>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div>
+                            <label for="content-type-select" class="block text-sm font-medium mb-2 text-gray-300">အကြောင်းအရာအမျိုးအစား</label>
+                            <select id="content-type-select" class="w-full p-3 rounded-xl bg-gray-700 text-gray-200 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-300">
+                                <option value="Social Media Post" selected>Social Media Post</option>
+                                <option value="Blog Post">Blog Post</option>
+                                <option value="Email">Email</option>
+                                <option value="Product Description">Product Description</option>
+                                <option value="Poem">Poem</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="content-length-select" class="block text-sm font-medium mb-2 text-gray-300">အကြောင်းအရာအရှည်</label>
+                            <select id="content-length-select" class="w-full p-3 rounded-xl bg-gray-700 text-gray-200 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-300">
+                                <option value="Short">တိုတို</option>
+                                <option value="Medium">အလယ်အလတ်</option>
+                                <option value="Long">ရှည်ရှည်</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="emoji-select" class="block text-sm font-medium mb-2 text-gray-300">အီမိုဂျီ</label>
+                            <select id="emoji-select" class="w-full p-3 rounded-xl bg-gray-700 text-gray-200 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-300">
+                                <option value="no-emojis">မထည့်ပါနှင့်</option>
+                                <option value="add-emojis">ထည့်ပါ</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Contact information fields -->
+                    <div class="space-y-4 pt-4">
+                        <h3 class="text-lg font-medium text-gray-300">ဆက်သွယ်ရန်အချက်အလက် (အလိုအလျောက် သိမ်းဆည်းသည်)</h3>
+                        <div>
+                            <label for="phone-number-input" class="block text-sm font-medium mb-1 text-gray-300">ဖုန်းနံပါတ်</label>
+                            <input
+                                id="phone-number-input"
+                                type="tel"
+                                class="w-full p-3 rounded-xl bg-gray-700 text-gray-200 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-300 placeholder-gray-500"
+                                value="${phoneNumber}"
+                                placeholder="ဥပမာ၊ +95 9123456789"
+                            >
+                        </div>
+                        <div>
+                            <label for="email-input" class="block text-sm font-medium mb-1 text-gray-300">အီးမေးလ်</label>
+                            <input
+                                id="email-input"
+                                type="email"
+                                class="w-full p-3 rounded-xl bg-gray-700 text-gray-200 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-300 placeholder-gray-500"
+                                value="${email}"
+                                placeholder="ဥပမာ၊ example@email.com"
+                            >
+                        </div>
+                        <div>
+                            <label for="address-input" class="block text-sm font-medium mb-1 text-gray-300">လိပ်စာ</label>
+                            <input
+                                id="address-input"
+                                type="text"
+                                class="w-full p-3 rounded-xl bg-gray-700 text-gray-200 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-300 placeholder-gray-500"
+                                value="${address}"
+                                placeholder="ဥပမာ၊ ၃၁ လမ်း ၅၇ လမ်းထောင့် ၊ မန္တလေး"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="flex justify-center mt-6">
+                        <button
+                            id="generate-button"
+                            class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transform transition-transform duration-300 active:scale-95"
+                        >
+                            Content ဖန်တီးပါ
+                        </button>
+                    </div>
+                </div>
+                <div id="loading-indicator" class="mt-8 flex justify-center hidden">
+                    <div class="spinner"></div>
+                </div>
+                <div id="result-container" class="mt-8 p-6 bg-gray-700 rounded-xl border border-gray-600 shadow-inner hidden">
+                    <h2 class="text-xl sm:text-2xl font-semibold mb-2 text-gray-300">ဖန်တီးထားသော အကြောင်းအရာ</h2>
+                    <div id="result-content" class="whitespace-pre-wrap text-gray-300"></div>
+                    <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 mt-6">
+                        <button
+                            id="copy-button"
+                            class="w-full sm:w-1/2 bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-full shadow-lg transition duration-300"
+                        >
+                            ကူးယူပါ
+                        </button>
+                        <button
+                            id="edit-button"
+                            class="w-full sm:w-1/2 bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-full shadow-lg transition duration-300"
+                        >
+                            ပြင်ဆင်ပါ
+                        </button>
+                    </div>
+                </div>
+            </div>`;
+        }
+        
+        // Function to create the Image Generator page content
+        function createImageGeneratorPage() {
+            return `
+            <div class="bg-gray-800 p-6 sm:p-8 md:p-10 rounded-3xl shadow-2xl w-full">
+                <header class="text-center mb-8">
+                    <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-cyan-600">
+                        AI ပုံဖန်တီးခြင်း
+                    </h1>
+                    <p class="mt-2 text-sm sm:text-base text-gray-400">
+                        သင်စိတ်ကူးထားတဲ့ပုံကို စာသားနဲ့ဖော်ပြပြီး ဖန်တီးပါ။
+                    </p>
+                </header>
+                <div class="space-y-6">
+                    <div>
+                        <label for="image-prompt-input" class="block text-sm font-medium mb-2 text-gray-300">ပုံဖော်မယ့် ဖော်ပြချက် (အသေးစိတ် ရေးပါ)</label>
+                        <textarea
+                            id="image-prompt-input"
+                            class="w-full h-32 p-4 rounded-xl resize-none bg-gray-700 text-gray-200 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-teal-500 transition duration-300 placeholder-gray-500"
+                            placeholder="ဥပမာ၊ လပြည့်ညမှာ တောက်ပနေတဲ့ လမ်းမကြီးပေါ်က မြို့တစ်မြို့ရဲ့ မြင်ကွင်း၊ ဆိုင်ကယ်စီးနေတဲ့ လူတစ်ယောက်၊ ရောင်စုံမီးအလင်းရောင်များနဲ့..."
+                        ></textarea>
+                    </div>
+                    <div class="flex justify-center mt-6">
+                        <button
+                            id="image-generate-button"
+                            class="bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transform transition-transform duration-300 active:scale-95"
+                        >
+                            ပုံဖန်တီးပါ
+                        </button>
+                    </div>
+                </div>
+                <div id="image-loading-indicator" class="mt-8 flex justify-center hidden">
+                    <div class="spinner"></div>
+                </div>
+                <div id="image-result-container" class="mt-8 p-6 bg-gray-700 rounded-xl border border-gray-600 shadow-inner hidden">
+                    <h2 class="text-xl sm:text-2xl font-semibold mb-4 text-gray-300 text-center">ဖန်တီးထားသောပုံ</h2>
+                    <div class="image-container">
+                         <img id="generated-image" src="" alt="Generated image" class="hidden">
+                         <p id="image-error-text" class="text-red-400 text-center hidden"></p>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        // Function to create the About page content
+        function createAboutPage() {
+            return `
+            <div class="bg-gray-800 p-6 sm:p-8 md:p-10 rounded-3xl shadow-2xl w-full text-center">
+                <h2 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600 mb-4">
+                    ကျွန်ုပ်တို့၏ AI Content Writer အကြောင်း
+                </h2>
+                <p class="text-lg text-gray-300 mb-4">
+                    ဤကိရိယာသည် အရည်အသွေးမြင့် စာသားများကို လျင်မြန်ထိရောက်စွာ ဖန်တီးရာတွင် အထောက်အကူဖြစ်စေရန် Gemini API ၏ စွမ်းအားကို အသုံးပြုထားသည်။ အသေးစား Social Media ပို့စ်မှသည် အရှည်ကြီးသော Blog ပို့စ်များအထိ သင့်လိုအပ်ချက်နှင့်ကိုက်ညီသည့် အကြောင်းအရာများကို ဖန်တီးပေးနိုင်သည်။
+                </p>
+                <p class="text-md text-gray-400">
+                    ကျွန်ုပ်တို့၏ ရည်ရွယ်ချက်မှာ စာရေးဆရာများ၊ စျေးကွက်ရှာဖွေသူများနှင့် ဖန်တီးသူများအတွက် အကြောင်းအရာဖန်တီးမှုလုပ်ငန်းစဉ်ကို ပိုမိုလွယ်ကူစေရန်ဖြစ်သည်။
+                </p>
+            </div>
+            `;
+        }
+
+        // Function to create the Services page content
+        function createServicesPage() {
+            return `
+            <div class="bg-gray-800 p-6 sm:p-8 md:p-10 rounded-3xl shadow-2xl w-full text-center">
+                <h2 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600 mb-4">
+                    ကျွန်ုပ်တို့၏ ဝန်ဆောင်မှုများ
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-gray-700 p-6 rounded-xl shadow-lg">
+                        <h3 class="text-xl font-semibold text-gray-200 mb-2">အကြောင်းအရာ ဖန်တီးခြင်း</h3>
+                        <p class="text-gray-400">
+                            သင့်လိုအပ်ချက်နှင့် ကိုက်ညီသော blog ပို့စ်များ၊ ဆောင်းပါးများ နှင့် social media အကြောင်းအရာများကို ဖန်တီးနိုင်သည်။
+                        </p>
+                    </div>
+                    <div class="bg-gray-700 p-6 rounded-xl shadow-lg">
+                        <h3 class="text-xl font-semibold text-gray-200 mb-2">ဖန်တီးမှုဆိုင်ရာ ရေးသားခြင်း</h3>
+                        <p class="text-gray-400">
+                            သင့်၏ နောက်ထပ်ပရောဂျက်အတွက် ဆန်းသစ်သော ပုံပြင်များ၊ ကဗျာများနှင့် ဇာတ်ညွှန်းများကို ဖန်တီးနိုင်သည်။
+                        </p>
+                    </div>
+                    <div class="bg-gray-700 p-6 rounded-xl shadow-lg">
+                        <h3 class="text-xl font-semibold text-gray-200 mb-2">မူကြမ်းရေးဆွဲခြင်းနှင့် တည်းဖြတ်ခြင်း</h3>
+                        <p class="text-gray-400">
+                            အကြောင်းအရာအသစ်များ ရေးဆွဲရာတွင် သို့မဟုတ် ရှိပြီးသားစာသားများကို ရှင်းလင်းပြတ်သားစေရန်နှင့် ပုံစံကောင်းမွန်စေရန် တည်းဖြတ်ခြင်းတို့တွင် အကူအညီရယူနိုင်သည်။
+                        </p>
+                    </div>
+                    <div class="bg-gray-700 p-6 rounded-xl shadow-lg">
+                        <h3 class="text-xl font-semibold text-gray-200 mb-2">ဘာသာစကားမျိုးစုံ ထောက်ပံ့မှု</h3>
+                        <p class="text-gray-400">
+                            ကျွန်ုပ်တို့၏ AI သည် မြန်မာဘာသာစကားအပါအဝင် ဘာသာစကားမျိုးစုံဖြင့် အကြောင်းအရာများကို ဖန်တီးပေးနိုင်သည်။
+                        </p>
+                    </div>
+                </div>
+            </div>
+            `;
+        }
+
+        // --- Routing and Event Handling ---
+        function loadContent(section) {
+            let contentHTML = '';
+            let pageScript = null;
+
+            if (section === 'home') {
+                contentHTML = createHomePage();
+            } else if (section === 'image-generator') {
+                contentHTML = createImageGeneratorPage();
+            } else if (section === 'about') {
+                contentHTML = createAboutPage();
+            } else if (section === 'services') {
+                contentHTML = createServicesPage();
+            }
+
+            mainContent.innerHTML = contentHTML;
+
+            // Re-attach event listeners based on the current page
+            if (section === 'home') {
+                document.getElementById('generate-button').addEventListener('click', generateContent);
+                document.getElementById('copy-button').addEventListener('click', () => {
+                    const tempTextArea = document.createElement('textarea');
+                    const resultContent = document.getElementById('result-content');
+                    tempTextArea.value = resultContent.textContent;
+                    document.body.appendChild(tempTextArea);
+                    tempTextArea.select();
+                    try {
+                        document.execCommand('copy');
+                        copyButton.textContent = 'ကူးယူပြီးပါပြီ။';
+                        setTimeout(() => copyButton.textContent = 'ကူးယူပါ', 2000);
+                    } catch (err) {
+                        console.error('စာသားကူးယူ၍ မရပါ:', err);
+                        copyButton.textContent = 'ကူးယူ၍ မရပါ';
+                    } finally {
+                        document.body.removeChild(tempTextArea);
+                    }
+                });
+                document.getElementById('edit-button').addEventListener('click', () => {
+                    const promptInput = document.getElementById('prompt-input');
+                    const resultContent = document.getElementById('result-content');
+                    const resultContainer = document.getElementById('result-container');
+                    promptInput.value = resultContent.textContent;
+                    resultContainer.classList.add('hidden');
+                    promptInput.focus();
+                });
+            } else if (section === 'image-generator') {
+                document.getElementById('image-generate-button').addEventListener('click', generateImage);
+            }
+        }
+
+        // Initial page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadContent('home');
+        });
+
+        // Toggle mobile navigation menu visibility
+        hamburgerButton.addEventListener('click', () => {
+            navMenu.classList.toggle('hidden');
+        });
+        
+        // Add event listeners to navigation links
+        document.getElementById('nav-home').addEventListener('click', (e) => {
+            e.preventDefault();
+            loadContent('home');
+            navMenu.classList.add('hidden'); // Hide menu after selection on mobile
+        });
+        document.getElementById('nav-image-generator').addEventListener('click', (e) => {
+            e.preventDefault();
+            loadContent('image-generator');
+            navMenu.classList.add('hidden'); // Hide menu after selection on mobile
+        });
+        document.getElementById('nav-about').addEventListener('click', (e) => {
+            e.preventDefault();
+            loadContent('about');
+            navMenu.classList.add('hidden'); // Hide menu after selection on mobile
+        });
+        document.getElementById('nav-services').addEventListener('click', (e) => {
+            e.preventDefault();
+            loadContent('services');
+            navMenu.classList.add('hidden'); // Hide menu after selection on mobile
+        });
+
+    </script>
+
 </body>
 </html>
