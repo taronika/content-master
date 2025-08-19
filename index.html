@@ -93,6 +93,11 @@
     </div>
 
     <script>
+        // Disable right-click context menu
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
+
         // API key will be provided by the runtime environment.
         const apiKey = "AIzaSyClNUGqY-nXZj5eh3DXeRB_-YrqfQ6pA3Y";
         const TRANSLATION_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
@@ -467,8 +472,8 @@
                 <div id="image-result-container" class="mt-8 p-6 bg-gray-700 rounded-xl border border-gray-600 shadow-inner hidden">
                     <h2 class="text-xl sm:text-2xl font-semibold mb-4 text-gray-300 text-center">ဖန်တီးထားသောပုံ</h2>
                     <div class="image-container">
-                         <img id="generated-image" src="" alt="Generated image" class="hidden">
-                         <p id="image-error-text" class="text-red-400 text-center hidden"></p>
+                           <img id="generated-image" src="" alt="Generated image" class="hidden">
+                           <p id="image-error-text" class="text-red-400 text-center hidden"></p>
                     </div>
                 </div>
             </div>`;
@@ -577,40 +582,35 @@
                 document.getElementById('image-generate-button').addEventListener('click', generateImage);
             }
         }
-
+        
         // Initial page load
         document.addEventListener('DOMContentLoaded', () => {
-            loadContent('home');
+            const initialSection = window.location.hash.substring(1) || 'home';
+            loadContent(initialSection);
         });
 
-        // Toggle mobile navigation menu visibility
-        hamburgerButton.addEventListener('click', () => {
-            navMenu.classList.toggle('hidden');
+        // Handle navigation clicks
+        document.querySelectorAll('a[href^="#"]').forEach(link => {
+            link.addEventListener('click', (event) => {
+                event.preventDefault();
+                const section = event.target.getAttribute('href').substring(1);
+                window.history.pushState({}, '', `#${section}`);
+                loadContent(section);
+                
+                // Close mobile menu after clicking a link
+                if (navMenu.classList.contains('flex')) {
+                    navMenu.classList.remove('flex');
+                    navMenu.classList.add('hidden');
+                }
+            });
         });
         
-        // Add event listeners to navigation links
-        document.getElementById('nav-home').addEventListener('click', (e) => {
-            e.preventDefault();
-            loadContent('home');
-            navMenu.classList.add('hidden'); // Hide menu after selection on mobile
-        });
-        document.getElementById('nav-image-generator').addEventListener('click', (e) => {
-            e.preventDefault();
-            loadContent('image-generator');
-            navMenu.classList.add('hidden'); // Hide menu after selection on mobile
-        });
-        document.getElementById('nav-about').addEventListener('click', (e) => {
-            e.preventDefault();
-            loadContent('about');
-            navMenu.classList.add('hidden'); // Hide menu after selection on mobile
-        });
-        document.getElementById('nav-services').addEventListener('click', (e) => {
-            e.preventDefault();
-            loadContent('services');
-            navMenu.classList.add('hidden'); // Hide menu after selection on mobile
+        // Handle hamburger button click for mobile menu
+        hamburgerButton.addEventListener('click', () => {
+            navMenu.classList.toggle('hidden');
+            navMenu.classList.toggle('flex');
         });
 
     </script>
-
 </body>
 </html>
