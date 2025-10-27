@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -28,17 +29,7 @@
         }
         
         /* Custom styles for the hamburger menu icon */
-        .hamburger-icon span {
-            display: block;
-            height: 2px;
-            width: 24px;
-            background-color: #d1d5db; /* gray-400 */
-            transition: all 0.3s ease-in-out;
-        }
-
-        .hamburger-icon span:not(:last-child) {
-            margin-bottom: 4px;
-        }
+        
         
         /* Style for the generated image to make it responsive */
         #generated-image {
@@ -68,21 +59,14 @@
                     ContentAI
                 </a>
                 <!-- Hamburger menu button for mobile -->
-                <button id="hamburger-button" class="sm:hidden text-gray-400 focus:outline-none">
-                    <div class="hamburger-icon">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </div>
-                </button>
+                
             </div>
 
             <!-- Menu Links - Hidden on mobile by default -->
             <div id="nav-menu" class="hidden sm:flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-8 text-gray-400 font-semibold w-full sm:w-auto text-center sm:text-left">
-                <a href="#home" id="nav-home" class="hover:text-purple-400 transition-colors duration-300">ပင်မစာမျက်နှာ</a>
-                <a href="#image-generator" id="nav-image-generator" class="hover:text-purple-400 transition-colors duration-300">ပုံဖန်တီးခြင်း</a>
-                <a href="#about" id="nav-about" class="hover:text-purple-400 transition-colors duration-300">အကြောင်း</a>
-                <a href="#services" id="nav-services" class="hover:text-purple-400 transition-colors duration-300">ဝန်ဆောင်မှုများ</a>
+                <!-- <a href="#home" id="nav-home" class="hover:text-purple-400 transition-colors duration-300">ပင်မစာမျက်နှာ</a> -->
+                <!-- <a href="#image-generator" id="nav-image-generator" class="hover:text-purple-400 transition-colors duration-300">ပုံဖန်တီးခြင်း</a> -->
+                
             </div>
         </div>
     </nav>
@@ -104,7 +88,7 @@
         const IMAGE_GEN_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${apiKey}`;
 
         // Get DOM elements
-        const hamburgerButton = document.getElementById('hamburger-button');
+        
         const navMenu = document.getElementById('nav-menu');
         const mainContent = document.getElementById('main-content');
         
@@ -333,7 +317,7 @@
                 </header>
                 <div class="space-y-6">
                     <div>
-                        <label for="prompt-input" class="block text-sm font-medium mb-2 text-gray-300">ခေါင်းစဉ်</label>
+                        <label for="prompt-input" class="block text-sm font-medium mb-2 text-gray-300">ကုန်ပစွည်းအမည်၊အမျိူးအစားနှင့်လိုချင်တဲ့ပုံစံကို အကြမ်းဖျင်းပြောပြပါ</label>
                         <textarea
                             id="prompt-input"
                             class="w-full h-32 p-4 rounded-xl resize-none bg-gray-700 text-gray-200 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-300 placeholder-gray-500"
@@ -348,6 +332,7 @@
                                 <option value="Blog Post">Blog Post</option>
                                 <option value="Email">Email</option>
                                 <option value="Product Description">Product Description</option>
+                                <option value="Copywriting">Copywriting</option>
                                 <option value="Poem">Poem</option>
                             </select>
                         </div>
@@ -360,7 +345,7 @@
                             </select>
                         </div>
                         <div>
-                            <label for="emoji-select" class="block text-sm font-medium mb-2 text-gray-300">အီမိုဂျီ</label>
+                            <label for="emoji-select" class="block text-sm font-medium mb-2 text-gray-300">Emoji</label>
                             <select id="emoji-select" class="w-full p-3 rounded-xl bg-gray-700 text-gray-200 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-300">
                                 <option value="no-emojis">မထည့်ပါနှင့်</option>
                                 <option value="add-emojis">ထည့်ပါ</option>
@@ -370,7 +355,7 @@
                     
                     <!-- Contact information fields -->
                     <div class="space-y-4 pt-4">
-                        <h3 class="text-lg font-medium text-gray-300">ဆက်သွယ်ရန်အချက်အလက် (အလိုအလျောက် သိမ်းဆည်းသည်)</h3>
+                        <h3 class="text-lg font-medium text-gray-300">ဆက်သွယ်ရန်အချက်အလက် </h3>
                         <div>
                             <label for="phone-number-input" class="block text-sm font-medium mb-1 text-gray-300">ဖုန်းနံပါတ်</label>
                             <input
@@ -378,7 +363,7 @@
                                 type="tel"
                                 class="w-full p-3 rounded-xl bg-gray-700 text-gray-200 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-300 placeholder-gray-500"
                                 value="${phoneNumber}"
-                                placeholder="ဥပမာ၊ +95 9123456789"
+                                placeholder="ဥပမာ၊ 09123456789 (မထည့်လဲရ)"
                             >
                         </div>
                         <div>
@@ -388,7 +373,7 @@
                                 type="email"
                                 class="w-full p-3 rounded-xl bg-gray-700 text-gray-200 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-300 placeholder-gray-500"
                                 value="${email}"
-                                placeholder="ဥပမာ၊ example@email.com"
+                                placeholder="ဥပမာ၊ example@email.com (မထည့်လဲရ) "
                             >
                         </div>
                         <div>
@@ -398,7 +383,7 @@
                                 type="text"
                                 class="w-full p-3 rounded-xl bg-gray-700 text-gray-200 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-300 placeholder-gray-500"
                                 value="${address}"
-                                placeholder="ဥပမာ၊ ၃၁ လမ်း ၅၇ လမ်းထောင့် ၊ မန္တလေး"
+                                placeholder="ဥပမာ၊ ၃၁ လမ်း ၅၇ လမ်းထောင့် ၊ မန္တလေး (မထည့်လဲရ)"
                             >
                         </div>
                     </div>
@@ -482,52 +467,14 @@
         // Function to create the About page content
         function createAboutPage() {
             return `
-            <div class="bg-gray-800 p-6 sm:p-8 md:p-10 rounded-3xl shadow-2xl w-full text-center">
-                <h2 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600 mb-4">
-                    ကျွန်ုပ်တို့၏ AI Content Writer အကြောင်း
-                </h2>
-                <p class="text-lg text-gray-300 mb-4">
-                    ဤကိရိယာသည် အရည်အသွေးမြင့် စာသားများကို လျင်မြန်ထိရောက်စွာ ဖန်တီးရာတွင် အထောက်အကူဖြစ်စေရန် Gemini API ၏ စွမ်းအားကို အသုံးပြုထားသည်။ အသေးစား Social Media ပို့စ်မှသည် အရှည်ကြီးသော Blog ပို့စ်များအထိ သင့်လိုအပ်ချက်နှင့်ကိုက်ညီသည့် အကြောင်းအရာများကို ဖန်တီးပေးနိုင်သည်။
-                </p>
-                <p class="text-md text-gray-400">
-                    ကျွန်ုပ်တို့၏ ရည်ရွယ်ချက်မှာ စာရေးဆရာများ၊ စျေးကွက်ရှာဖွေသူများနှင့် ဖန်တီးသူများအတွက် အကြောင်းအရာဖန်တီးမှုလုပ်ငန်းစဉ်ကို ပိုမိုလွယ်ကူစေရန်ဖြစ်သည်။
-                </p>
-            </div>
+           
             `;
         }
 
         // Function to create the Services page content
         function createServicesPage() {
             return `
-            <div class="bg-gray-800 p-6 sm:p-8 md:p-10 rounded-3xl shadow-2xl w-full text-center">
-                <h2 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600 mb-4">
-                    ကျွန်ုပ်တို့၏ ဝန်ဆောင်မှုများ
-                </h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-gray-700 p-6 rounded-xl shadow-lg">
-                        <h3 class="text-xl font-semibold text-gray-200 mb-2">အကြောင်းအရာ ဖန်တီးခြင်း</h3>
-                        <p class="text-gray-400">
-                            သင့်လိုအပ်ချက်နှင့် ကိုက်ညီသော blog ပို့စ်များ၊ ဆောင်းပါးများ နှင့် social media အကြောင်းအရာများကို ဖန်တီးနိုင်သည်။
-                        </p>
-                    </div>
-                    <div class="bg-gray-700 p-6 rounded-xl shadow-lg">
-                        <h3 class="text-xl font-semibold text-gray-200 mb-2">ဖန်တီးမှုဆိုင်ရာ ရေးသားခြင်း</h3>
-                        <p class="text-gray-400">
-                            သင့်၏ နောက်ထပ်ပရောဂျက်အတွက် ဆန်းသစ်သော ပုံပြင်များ၊ ကဗျာများနှင့် ဇာတ်ညွှန်းများကို ဖန်တီးနိုင်သည်။
-                        </p>
-                    </div>
-                    <div class="bg-gray-700 p-6 rounded-xl shadow-lg">
-                        <h3 class="text-xl font-semibold text-gray-200 mb-2">မူကြမ်းရေးဆွဲခြင်းနှင့် တည်းဖြတ်ခြင်း</h3>
-                        <p class="text-gray-400">
-                            အကြောင်းအရာအသစ်များ ရေးဆွဲရာတွင် သို့မဟုတ် ရှိပြီးသားစာသားများကို ရှင်းလင်းပြတ်သားစေရန်နှင့် ပုံစံကောင်းမွန်စေရန် တည်းဖြတ်ခြင်းတို့တွင် အကူအညီရယူနိုင်သည်။
-                        </p>
-                    </div>
-                    <div class="bg-gray-700 p-6 rounded-xl shadow-lg">
-                        <h3 class="text-xl font-semibold text-gray-200 mb-2">ဘာသာစကားမျိုးစုံ ထောက်ပံ့မှု</h3>
-                        <p class="text-gray-400">
-                            ကျွန်ုပ်တို့၏ AI သည် မြန်မာဘာသာစကားအပါအဝင် ဘာသာစကားမျိုးစုံဖြင့် အကြောင်းအရာများကို ဖန်တီးပေးနိုင်သည်။
-                        </p>
-                    </div>
+            
                 </div>
             </div>
             `;
@@ -606,10 +553,7 @@
         });
         
         // Handle hamburger button click for mobile menu
-        hamburgerButton.addEventListener('click', () => {
-            navMenu.classList.toggle('hidden');
-            navMenu.classList.toggle('flex');
-        });
+        
 
     </script>
 </body>
