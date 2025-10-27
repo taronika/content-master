@@ -261,7 +261,7 @@
 
         // API key will be provided by the runtime environment.
         const apiKey = "AIzaSyClNUGqY-nXZj5eh3DXeRB_-YrqfQ6pA3Y";
-        const TRANSLATION_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
+        const TRANSLATION_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
         const IMAGE_GEN_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${apiKey}`; // Note: This URL remains for context, but the function logic below will prevent it from being called incorrectly.
 
         // Get DOM elements
@@ -447,6 +447,7 @@
                 resultContainer.classList.remove('hidden');
                 resultImage.classList.add('hidden');
                 errorText.classList.remove('hidden');
+                // Add animation to the empty input
                 promptInput.classList.add('animate-pulse-glow');
                 setTimeout(() => {
                     promptInput.classList.remove('animate-pulse-glow');
@@ -454,6 +455,7 @@
                 return;
             }
 
+            // Show loading state with animation
             generateButton.classList.add('animate-pulse');
             generateButton.disabled = true;
             generateButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Generating Image...';
@@ -463,7 +465,7 @@
             errorText.classList.add('hidden');
 
             try {
-                // Step 1: Translate the Burmese prompt to English. This part will work with the corrected URL.
+                // Step 1: Translate the Burmese prompt to English using Gemini
                 const translationPrompt = `Translate this Burmese text into a detailed English image generation prompt, focusing on descriptive nouns, adjectives, and a clear scene description. For example, "လှပသော ပန်းခြံတစ်ခုတွင် ပန်းမျိုးစုံ ပွင့်နေသည်" should be translated as "a beautiful garden with various colorful flowers in full bloom, high detail, photorealistic." Text to translate: "${burmesePrompt}"`;
                 const translationPayload = {
                     contents: [{
@@ -480,17 +482,34 @@
                 const translationResult = await translationResponse.json();
                 const englishPrompt = translationResult.candidates[0].content.parts[0].text.trim();
 
-                // Step 2: The original code fails here. Instead of calling the incorrect API, we will show a helpful error message.
-                // To generate images, this app must be configured to use the Google Vertex AI API, which is a different service.
-                console.error("Configuration Error: The image generator is trying to use an Imagen model via the Gemini API, which is not supported.");
-                errorText.innerHTML = `<strong>Configuration Error:</strong> The image generation model is not available at this API endpoint.<br><br>The translated English prompt was: "<em>${englishPrompt}</em>"`;
-                errorText.classList.remove('hidden');
-                resultImage.classList.add('hidden');
-
+                // Step 2: Generate the image using the translated English prompt
+                const imagePayload = {
+                    instances: { prompt: englishPrompt },
+                    parameters: { "sampleCount": 1 }
+                };
+                
+                const imageResponse = await fetchWithExponentialBackoff(IMAGE_GEN_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(imagePayload)
+                });
+                
+                const imageResult = await imageResponse.json();
+                
+                if (imageResult.predictions && imageResult.predictions.length > 0 && imageResult.predictions[0].bytesBase64Encoded) {
+                    const base64Data = imageResult.predictions[0].bytesBase64Encoded;
+                    const imageUrl = `data:image/png;base64,${base64Data}`;
+                    resultImage.src = imageUrl;
+                    resultImage.classList.remove('hidden');
+                    resultImage.classList.add('animate-fade-in-up');
+                } else {
+                    console.error("Unexpected image API response structure:", imageResult);
+                    errorText.textContent = "Could not generate the image. Please try a different description.";
+                    errorText.classList.remove('hidden');
+                }
             } catch (error) {
-                // This will now catch errors only from the translation step.
-                console.error("Failed to translate prompt:", error);
-                errorText.textContent = "Something went wrong during the prompt translation. Please check the API key and try again.";
+                console.error("Failed to generate image:", error);
+                errorText.textContent = "Something went wrong. Please try again later.";
                 errorText.classList.remove('hidden');
             } finally {
                 generateButton.classList.remove('animate-pulse');
