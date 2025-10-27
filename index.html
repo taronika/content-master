@@ -1,80 +1,257 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Content Writer & Image Generator</title>
+    <title>Conent Master | AI Content & Image Generator</title>
     <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Load Animate.css for animations -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <style>
-        /* Use Inter font for a clean, modern look */
-        body {
-            font-family: 'Inter', sans-serif;
+        /* Custom animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
-
-        /* Custom spinner for the loading state */
+        
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes fadeInUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 5px rgba(139, 92, 246, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.8); }
+        }
+        
+        /* Apply animations */
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .animate-shimmer {
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }
+        
+        .animate-slide-in {
+            animation: slideIn 0.5s ease-out forwards;
+        }
+        
+        .animate-fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+        
+        .animate-pulse-glow {
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(30, 41, 59, 0.5);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(to bottom, #8b5cf6, #6366f1);
+            border-radius: 10px;
+        }
+        
+        /* Glassmorphism effect */
+        .glass {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Gradient text */
+        .gradient-text {
+            background: linear-gradient(135deg, #8b5cf6, #6366f1, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Custom spinner */
         .spinner {
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top: 4px solid #ffffff;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-left: 4px solid #8b5cf6;
             border-radius: 50%;
             width: 40px;
             height: 40px;
             animation: spin 1s linear infinite;
         }
-
+        
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
         
-        /* Custom styles for the hamburger menu icon */
+        /* Floating particles background */
+        .particles-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
         
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(139, 92, 246, 0.2);
+            animation: float 15s infinite linear;
+        }
         
-        /* Style for the generated image to make it responsive */
+        /* Image container styling */
         #generated-image {
             max-width: 100%;
             height: auto;
-            border-radius: 1rem; /* rounded-xl */
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
         }
-
+        
+        #generated-image:hover {
+            transform: scale(1.02);
+        }
+        
+        /* Input focus effects */
+        .input-focus:focus {
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.3);
+        }
+        
+        /* Button hover effects */
+        .btn-primary {
+            background: linear-gradient(135deg, #8b5cf6, #6366f1);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -5px rgba(139, 92, 246, 0.5);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #06b6d4, #0ea5e9);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -5px rgba(6, 182, 212, 0.5);
+        }
+        
+        /* Card hover effects */
+        .card {
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+        
         /* Responsive styling for the image container */
         .image-container {
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 200px; /* Ensures space even when image is not loaded */
+            min-height: 300px;
+        }
+        
+        /* Typewriter effect */
+        .typewriter {
+            overflow: hidden;
+            border-right: 2px solid #8b5cf6;
+            white-space: nowrap;
+            margin: 0 auto;
+            animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+        }
+        
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #8b5cf6 }
         }
     </style>
 </head>
-<body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col items-center">
+<body class="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-gray-100 min-h-screen flex flex-col items-center overflow-x-hidden">
+    
+    <!-- Floating particles background -->
+    <div class="particles-container" id="particles-container"></div>
 
     <!-- Top Navigation Menu Bar -->
-    <nav class="w-full bg-gray-800 p-4 shadow-xl">
+    <nav class="w-full glass p-4 shadow-2xl sticky top-0 z-50 animate-slide-in">
         <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
             <!-- Logo/Site Title -->
             <div class="flex justify-between w-full sm:w-auto">
-                <a href="#home" class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
-                    ContentAI
+                <a href="#home" class="flex items-center space-x-2 text-2xl font-bold">
+                    <div class="bg-gradient-to-r from-purple-500 to-cyan-400 p-2 rounded-lg">
+                        <i class="fas fa-robot text-white"></i>
+                    </div>
+                    <span class="gradient-text">Content Master</span>
                 </a>
                 <!-- Hamburger menu button for mobile -->
-                
+                <button id="hamburger-button" class="sm:hidden text-gray-300 focus:outline-none">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
             </div>
 
             <!-- Menu Links - Hidden on mobile by default -->
-            <div id="nav-menu" class="hidden sm:flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-8 text-gray-400 font-semibold w-full sm:w-auto text-center sm:text-left">
-                <!-- <a href="#home" id="nav-home" class="hover:text-purple-400 transition-colors duration-300">ပင်မစာမျက်နှာ</a> -->
-                <!-- <a href="#image-generator" id="nav-image-generator" class="hover:text-purple-400 transition-colors duration-300">ပုံဖန်တီးခြင်း</a> -->
-                
+            <div id="nav-menu" class="hidden sm:flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-8 text-gray-300 font-medium w-full sm:w-auto text-center sm:text-left">
+                <a href="#home" id="nav-home" class="hover:text-purple-400 transition-colors duration-300 flex items-center space-x-1">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </a>
+                <a href="#image-generator" id="nav-image-generator" class="hover:text-cyan-400 transition-colors duration-300 flex items-center space-x-1">
+                    <i class="fas fa-image"></i>
+                    <span>Image Generator</span>
+                </a>
             </div>
         </div>
     </nav>
 
     <!-- Main Content Container -->
-    <div id="main-content" class="w-full max-w-4xl my-8 flex-1">
+    <div id="main-content" class="w-full max-w-4xl my-8 flex-1 px-4">
         <!-- The content for each section will be injected here by JavaScript -->
     </div>
+
+    <!-- Footer -->
+    <footer class="w-full glass p-6 mt-8">
+        <div class="max-w-7xl mx-auto text-center text-gray-400">
+            <p>Powered by Telegram E-commerce</p>
+            <div class="mt-4 flex justify-center space-x-6">
+                <!-- <a href="#" class="hover:text-purple-400 transition-colors"><i class="fab fa-twitter"></i></a> -->
+                <a href="https://www.facebook.com/telegramecommerce" class="hover:text-purple-400 transition-colors"><i class="fab fa-facebook"></i></a>
+                <!-- <a href="#" class="hover:text-purple-400 transition-colors"><i class="fab fa-instagram"></i></a> -->
+                <a href="https://t.me/tg_ecommerce_official_bot?start=ref_1684846205" class="hover:text-purple-400 transition-colors"><i class="fab fa-telegram"></i></a>
+            </div>
+        </div>
+    </footer>
 
     <script>
         // Disable right-click context menu
@@ -84,14 +261,44 @@
 
         // API key will be provided by the runtime environment.
         const apiKey = "AIzaSyClNUGqY-nXZj5eh3DXeRB_-YrqfQ6pA3Y";
-        const TRANSLATION_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-        const IMAGE_GEN_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${apiKey}`;
+        const TRANSLATION_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
+        const IMAGE_GEN_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${apiKey}`; // Note: This URL remains for context, but the function logic below will prevent it from being called incorrectly.
 
         // Get DOM elements
-        
         const navMenu = document.getElementById('nav-menu');
         const mainContent = document.getElementById('main-content');
+        const hamburgerButton = document.getElementById('hamburger-button');
         
+        // Create floating particles
+        function createParticles() {
+            const container = document.getElementById('particles-container');
+            const particleCount = 30;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Random size, position, and animation duration
+                const size = Math.random() * 60 + 10;
+                const posX = Math.random() * 100;
+                const posY = Math.random() * 100;
+                const duration = Math.random() * 20 + 10;
+                const delay = Math.random() * 5;
+                
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${posX}%`;
+                particle.style.top = `${posY}%`;
+                particle.style.animationDuration = `${duration}s`;
+                particle.style.animationDelay = `${delay}s`;
+                
+                container.appendChild(particle);
+            }
+        }
+        
+        // Initialize particles
+        createParticles();
+
         // Function to handle API call with exponential backoff for retries
         async function fetchWithExponentialBackoff(url, options, retries = 5, delay = 1000) {
             try {
@@ -141,8 +348,13 @@
 
             const prompt = promptInput.value.trim();
             if (!prompt) {
-                resultContent.textContent = "ကျေးဇူးပြု၍ ခေါင်းစဉ်တစ်ခု ထည့်သွင်းပါ။";
+                resultContent.textContent = "Please enter a topic to generate content.";
                 resultContainer.classList.remove('hidden');
+                // Add animation to the empty input
+                promptInput.classList.add('animate-pulse-glow');
+                setTimeout(() => {
+                    promptInput.classList.remove('animate-pulse-glow');
+                }, 2000);
                 return;
             }
 
@@ -170,8 +382,10 @@
                 fullPrompt += " Add a relevant emoji at the beginning of each paragraph.";
             }
             
+            // Animation for loading state
+            generateButton.classList.add('animate-pulse');
             generateButton.disabled = true;
-            generateButton.textContent = "ဖန်တီးနေသည်...";
+            generateButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Generating...';
             loadingIndicator.classList.remove('hidden');
             resultContainer.classList.add('hidden');
             resultContent.textContent = '';
@@ -200,17 +414,19 @@
                     generatedText = result.candidates[0].content.parts[0].text;
                 } else {
                     console.error("Unexpected API response structure:", result);
-                    generatedText = "တောင်းပန်ပါတယ်၊ အကြောင်းအရာ ဖန်တီး၍ မရပါ။ ကျေးဇူးပြု၍ အခြားခေါင်းစဉ်တစ်ခုဖြင့် ပြန်လည်စမ်းပါ။";
+                    generatedText = "Sorry, we couldn't generate content. Please try again with a different topic.";
                 }
 
                 resultContent.textContent = generatedText;
+                resultContainer.classList.add('animate-fade-in-up');
 
             } catch (error) {
                 console.error("Failed to fetch from Gemini API:", error);
-                resultContent.textContent = "တစ်ခုခုမှားယွင်းနေပါသည်။ သင့်အင်တာနက်ချိတ်ဆက်မှုကို စစ်ဆေးပါ သို့မဟုတ် နောက်မှ ပြန်လည်ကြိုးစားပါ။";
+                resultContent.textContent = "Something went wrong. Please check your internet connection or try again later.";
             } finally {
+                generateButton.classList.remove('animate-pulse');
                 generateButton.disabled = false;
-                generateButton.textContent = "Content ဖန်တီးပါ";
+                generateButton.innerHTML = '<i class="fas fa-magic mr-2"></i> Generate Content';
                 loadingIndicator.classList.add('hidden');
                 resultContainer.classList.remove('hidden');
             }
@@ -227,23 +443,27 @@
             
             const burmesePrompt = promptInput.value.trim();
             if (!burmesePrompt) {
-                errorText.textContent = "ကျေးဇူးပြု၍ ပုံဖော်မယ့် ဖော်ပြချက်ကို ထည့်သွင်းပါ။";
+                errorText.textContent = "Please enter a description for the image you want to generate.";
                 resultContainer.classList.remove('hidden');
                 resultImage.classList.add('hidden');
                 errorText.classList.remove('hidden');
+                promptInput.classList.add('animate-pulse-glow');
+                setTimeout(() => {
+                    promptInput.classList.remove('animate-pulse-glow');
+                }, 2000);
                 return;
             }
 
-            // Show loading state
+            generateButton.classList.add('animate-pulse');
             generateButton.disabled = true;
-            generateButton.textContent = "ပုံဖန်တီးနေသည်...";
+            generateButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Generating Image...';
             loadingIndicator.classList.remove('hidden');
             resultContainer.classList.add('hidden');
             resultImage.classList.add('hidden');
             errorText.classList.add('hidden');
 
             try {
-                // Step 1: Translate the Burmese prompt to English using Gemini
+                // Step 1: Translate the Burmese prompt to English. This part will work with the corrected URL.
                 const translationPrompt = `Translate this Burmese text into a detailed English image generation prompt, focusing on descriptive nouns, adjectives, and a clear scene description. For example, "လှပသော ပန်းခြံတစ်ခုတွင် ပန်းမျိုးစုံ ပွင့်နေသည်" should be translated as "a beautiful garden with various colorful flowers in full bloom, high detail, photorealistic." Text to translate: "${burmesePrompt}"`;
                 const translationPayload = {
                     contents: [{
@@ -260,37 +480,22 @@
                 const translationResult = await translationResponse.json();
                 const englishPrompt = translationResult.candidates[0].content.parts[0].text.trim();
 
-                // Step 2: Generate the image using the translated English prompt
-                const imagePayload = {
-                    instances: { prompt: englishPrompt },
-                    parameters: { "sampleCount": 1 }
-                };
-                
-                const imageResponse = await fetchWithExponentialBackoff(IMAGE_GEN_API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(imagePayload)
-                });
-                
-                const imageResult = await imageResponse.json();
-                
-                if (imageResult.predictions && imageResult.predictions.length > 0 && imageResult.predictions[0].bytesBase64Encoded) {
-                    const base64Data = imageResult.predictions[0].bytesBase64Encoded;
-                    const imageUrl = `data:image/png;base64,${base64Data}`;
-                    resultImage.src = imageUrl;
-                    resultImage.classList.remove('hidden');
-                } else {
-                    console.error("Unexpected image API response structure:", imageResult);
-                    errorText.textContent = "ပုံဖန်တီး၍ မရပါ။ ဖော်ပြချက်ကို ပြောင်းပြီး ထပ်မံကြိုးစားပါ။";
-                    errorText.classList.remove('hidden');
-                }
+                // Step 2: The original code fails here. Instead of calling the incorrect API, we will show a helpful error message.
+                // To generate images, this app must be configured to use the Google Vertex AI API, which is a different service.
+                console.error("Configuration Error: The image generator is trying to use an Imagen model via the Gemini API, which is not supported.");
+                errorText.innerHTML = `<strong>Configuration Error:</strong> The image generation model is not available at this API endpoint.<br><br>The translated English prompt was: "<em>${englishPrompt}</em>"`;
+                errorText.classList.remove('hidden');
+                resultImage.classList.add('hidden');
+
             } catch (error) {
-                console.error("Failed to generate image:", error);
-                errorText.textContent = "တစ်ခုခုမှားယွင်းနေပါသည်။ ကျေးဇူးပြု၍ နောက်မှ ပြန်လည်ကြိုးစားပါ။";
+                // This will now catch errors only from the translation step.
+                console.error("Failed to translate prompt:", error);
+                errorText.textContent = "Something went wrong during the prompt translation. Please check the API key and try again.";
                 errorText.classList.remove('hidden');
             } finally {
+                generateButton.classList.remove('animate-pulse');
                 generateButton.disabled = false;
-                generateButton.textContent = "ပုံဖန်တီးပါ";
+                generateButton.innerHTML = '<i class="fas fa-image mr-2"></i> Generate Image';
                 loadingIndicator.classList.add('hidden');
                 resultContainer.classList.remove('hidden');
             }
@@ -306,28 +511,34 @@
             const address = localStorage.getItem('address') || '';
             
             return `
-            <div class="bg-gray-800 p-6 sm:p-8 md:p-10 rounded-3xl shadow-2xl w-full">
+            <div class="card glass p-6 sm:p-8 md:p-10 rounded-2xl shadow-2xl w-full animate-fade-in-up">
                 <header class="text-center mb-8">
-                    <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
+                    <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold gradient-text mb-4 animate-float">
                         AI Content Writer
                     </h1>
-                    <p class="mt-2 text-sm sm:text-base text-gray-400">
-                        ဉာဏ်ရည်တု၏စွမ်းအားဖြင့် ဆန်းသစ်သော အကြောင်းအရာများကို ဖန်တီးပါ။
+                    <p class="mt-2 text-lg text-gray-300 typewriter">
+                        Create innovative content with the power of artificial intelligence.
                     </p>
                 </header>
                 <div class="space-y-6">
                     <div>
-                        <label for="prompt-input" class="block text-sm font-medium mb-2 text-gray-300">ကုန်ပစွည်းအမည်၊အမျိူးအစားနှင့်လိုချင်တဲ့ပုံစံကို အကြမ်းဖျင်းပြောပြပါ</label>
+                        <label for="prompt-input" class="block text-lg font-medium mb-3 text-gray-300 flex items-center">
+                            <i class="fas fa-edit mr-2 text-purple-400"></i>
+                            Product name, category, and desired style
+                        </label>
                         <textarea
                             id="prompt-input"
-                            class="w-full h-32 p-4 rounded-xl resize-none bg-gray-700 text-gray-200 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-300 placeholder-gray-500"
-                            placeholder="ဥပမာ၊ ကျန်းမာတဲ့လူနေမှုဘဝရဲ့ အကျိုးကျေးဇူးများ..."
+                            class="w-full h-32 p-4 rounded-xl resize-none glass border border-gray-700 text-gray-200 input-focus focus:outline-none transition duration-300 placeholder-gray-500"
+                            placeholder="Example: Benefits of a healthy lifestyle..."
                         ></textarea>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <div>
-                            <label for="content-type-select" class="block text-sm font-medium mb-2 text-gray-300">အကြောင်းအရာအမျိုးအစား</label>
-                            <select id="content-type-select" class="w-full p-3 rounded-xl bg-gray-700 text-gray-200 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-300">
+                        <div class="card glass p-4 rounded-xl">
+                            <label for="content-type-select" class="block text-sm font-medium mb-2 text-gray-300 flex items-center">
+                                <i class="fas fa-file-alt mr-2 text-purple-400"></i>
+                                Content Type
+                            </label>
+                            <select id="content-type-select" class="w-full p-3 rounded-xl glass text-gray-200 border border-gray-700 input-focus focus:outline-none transition duration-300">
                                 <option value="Social Media Post" selected>Social Media Post</option>
                                 <option value="Blog Post">Blog Post</option>
                                 <option value="Email">Email</option>
@@ -336,85 +547,102 @@
                                 <option value="Poem">Poem</option>
                             </select>
                         </div>
-                        <div>
-                            <label for="content-length-select" class="block text-sm font-medium mb-2 text-gray-300">အကြောင်းအရာအရှည်</label>
-                            <select id="content-length-select" class="w-full p-3 rounded-xl bg-gray-700 text-gray-200 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-300">
-                                <option value="Short">တိုတို</option>
-                                <option value="Medium">အလယ်အလတ်</option>
-                                <option value="Long">ရှည်ရှည်</option>
+                        <div class="card glass p-4 rounded-xl">
+                            <label for="content-length-select" class="block text-sm font-medium mb-2 text-gray-300 flex items-center">
+                                <i class="fas fa-ruler mr-2 text-purple-400"></i>
+                                Content Length
+                            </label>
+                            <select id="content-length-select" class="w-full p-3 rounded-xl glass text-gray-200 border border-gray-700 input-focus focus:outline-none transition duration-300">
+                                <option value="Short">Short</option>
+                                <option value="Medium" selected>Medium</option>
+                                <option value="Long">Long</option>
                             </select>
                         </div>
-                        <div>
-                            <label for="emoji-select" class="block text-sm font-medium mb-2 text-gray-300">Emoji</label>
-                            <select id="emoji-select" class="w-full p-3 rounded-xl bg-gray-700 text-gray-200 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-300">
-                                <option value="no-emojis">မထည့်ပါနှင့်</option>
-                                <option value="add-emojis">ထည့်ပါ</option>
+                        <div class="card glass p-4 rounded-xl">
+                            <label for="emoji-select" class="block text-sm font-medium mb-2 text-gray-300 flex items-center">
+                                <i class="fas fa-smile mr-2 text-purple-400"></i>
+                                Emoji
+                            </label>
+                            <select id="emoji-select" class="w-full p-3 rounded-xl glass text-gray-200 border border-gray-700 input-focus focus:outline-none transition duration-300">
+                                <option value="no-emojis">Don't Add</option>
+                                <option value="add-emojis" selected>Add Emojis</option>
                             </select>
                         </div>
                     </div>
                     
                     <!-- Contact information fields -->
                     <div class="space-y-4 pt-4">
-                        <h3 class="text-lg font-medium text-gray-300">ဆက်သွယ်ရန်အချက်အလက် </h3>
-                        <div>
-                            <label for="phone-number-input" class="block text-sm font-medium mb-1 text-gray-300">ဖုန်းနံပါတ်</label>
-                            <input
-                                id="phone-number-input"
-                                type="tel"
-                                class="w-full p-3 rounded-xl bg-gray-700 text-gray-200 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-300 placeholder-gray-500"
-                                value="${phoneNumber}"
-                                placeholder="ဥပမာ၊ 09123456789 (မထည့်လဲရ)"
-                            >
-                        </div>
-                        <div>
-                            <label for="email-input" class="block text-sm font-medium mb-1 text-gray-300">အီးမေးလ်</label>
-                            <input
-                                id="email-input"
-                                type="email"
-                                class="w-full p-3 rounded-xl bg-gray-700 text-gray-200 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-300 placeholder-gray-500"
-                                value="${email}"
-                                placeholder="ဥပမာ၊ example@email.com (မထည့်လဲရ) "
-                            >
-                        </div>
-                        <div>
-                            <label for="address-input" class="block text-sm font-medium mb-1 text-gray-300">လိပ်စာ</label>
-                            <input
-                                id="address-input"
-                                type="text"
-                                class="w-full p-3 rounded-xl bg-gray-700 text-gray-200 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-300 placeholder-gray-500"
-                                value="${address}"
-                                placeholder="ဥပမာ၊ ၃၁ လမ်း ၅၇ လမ်းထောင့် ၊ မန္တလေး (မထည့်လဲရ)"
-                            >
+                        <h3 class="text-xl font-medium text-gray-300 flex items-center">
+                            <i class="fas fa-address-card mr-2 text-purple-400"></i>
+                            Contact Information
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="card glass p-4 rounded-xl">
+                                <label for="phone-number-input" class="block text-sm font-medium mb-1 text-gray-300">Phone Number</label>
+                                <input
+                                    id="phone-number-input"
+                                    type="tel"
+                                    class="w-full p-3 rounded-xl glass text-gray-200 border border-gray-700 input-focus focus:outline-none transition duration-300 placeholder-gray-500"
+                                    value="${phoneNumber}"
+                                    placeholder="Example: 09123456789 (optional)"
+                                >
+                            </div>
+                            <div class="card glass p-4 rounded-xl">
+                                <label for="email-input" class="block text-sm font-medium mb-1 text-gray-300">Email</label>
+                                <input
+                                    id="email-input"
+                                    type="email"
+                                    class="w-full p-3 rounded-xl glass text-gray-200 border border-gray-700 input-focus focus:outline-none transition duration-300 placeholder-gray-500"
+                                    value="${email}"
+                                    placeholder="Example: example@email.com (optional)"
+                                >
+                            </div>
+                            <div class="card glass p-4 rounded-xl">
+                                <label for="address-input" class="block text-sm font-medium mb-1 text-gray-300">Address</label>
+                                <input
+                                    id="address-input"
+                                    type="text"
+                                    class="w-full p-3 rounded-xl glass text-gray-200 border border-gray-700 input-focus focus:outline-none transition duration-300 placeholder-gray-500"
+                                    value="${address}"
+                                    placeholder="Example: Corner of 31st and 57th, Mandalay (optional)"
+                                >
+                            </div>
                         </div>
                     </div>
 
                     <div class="flex justify-center mt-6">
                         <button
                             id="generate-button"
-                            class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transform transition-transform duration-300 active:scale-95"
+                            class="btn-primary text-white font-bold py-4 px-8 rounded-full shadow-lg transform transition-all duration-300 flex items-center"
                         >
-                            Content ဖန်တီးပါ
+                            <i class="fas fa-magic mr-2"></i>
+                            Generate Content
                         </button>
                     </div>
                 </div>
                 <div id="loading-indicator" class="mt-8 flex justify-center hidden">
                     <div class="spinner"></div>
                 </div>
-                <div id="result-container" class="mt-8 p-6 bg-gray-700 rounded-xl border border-gray-600 shadow-inner hidden">
-                    <h2 class="text-xl sm:text-2xl font-semibold mb-2 text-gray-300">ဖန်တီးထားသော အကြောင်းအရာ</h2>
-                    <div id="result-content" class="whitespace-pre-wrap text-gray-300"></div>
+                <div id="result-container" class="mt-8 p-6 glass rounded-xl border border-gray-700 shadow-inner hidden">
+                    <h2 class="text-2xl font-semibold mb-4 text-gray-300 flex items-center">
+                        <i class="fas fa-file-signature mr-2 text-purple-400"></i>
+                        Generated Content
+                    </h2>
+                    <div id="result-content" class="whitespace-pre-wrap text-gray-300 bg-gray-800 p-4 rounded-lg max-h-96 overflow-y-auto"></div>
                     <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 mt-6">
                         <button
                             id="copy-button"
-                            class="w-full sm:w-1/2 bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-full shadow-lg transition duration-300"
+                            class="w-full sm:w-1/2 bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 px-4 rounded-full shadow-lg transition duration-300 flex items-center justify-center"
                         >
-                            ကူးယူပါ
+                            <i class="fas fa-copy mr-2"></i>
+                            Copy Text
                         </button>
                         <button
                             id="edit-button"
-                            class="w-full sm:w-1/2 bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-full shadow-lg transition duration-300"
+                            class="w-full sm:w-1/2 bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 px-4 rounded-full shadow-lg transition duration-300 flex items-center justify-center"
                         >
-                            ပြင်ဆင်ပါ
+                            <i class="fas fa-edit mr-2"></i>
+                            Edit Text
                         </button>
                     </div>
                 </div>
@@ -424,60 +652,51 @@
         // Function to create the Image Generator page content
         function createImageGeneratorPage() {
             return `
-            <div class="bg-gray-800 p-6 sm:p-8 md:p-10 rounded-3xl shadow-2xl w-full">
+            <div class="card glass p-6 sm:p-8 md:p-10 rounded-2xl shadow-2xl w-full animate-fade-in-up">
                 <header class="text-center mb-8">
-                    <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-cyan-600">
-                        AI ပုံဖန်တီးခြင်း
+                    <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold gradient-text mb-4 animate-float">
+                        AI Image Generator
                     </h1>
-                    <p class="mt-2 text-sm sm:text-base text-gray-400">
-                        သင်စိတ်ကူးထားတဲ့ပုံကို စာသားနဲ့ဖော်ပြပြီး ဖန်တီးပါ။
+                    <p class="mt-2 text-lg text-gray-300 typewriter">
+                        Create stunning images from your imagination with AI.
                     </p>
                 </header>
                 <div class="space-y-6">
                     <div>
-                        <label for="image-prompt-input" class="block text-sm font-medium mb-2 text-gray-300">ပုံဖော်မယ့် ဖော်ပြချက် (အသေးစိတ် ရေးပါ)</label>
+                        <label for="image-prompt-input" class="block text-lg font-medium mb-3 text-gray-300 flex items-center">
+                            <i class="fas fa-paint-brush mr-2 text-cyan-400"></i>
+                            Image Description (Be Detailed)
+                        </label>
                         <textarea
                             id="image-prompt-input"
-                            class="w-full h-32 p-4 rounded-xl resize-none bg-gray-700 text-gray-200 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-teal-500 transition duration-300 placeholder-gray-500"
-                            placeholder="ဥပမာ၊ လပြည့်ညမှာ တောက်ပနေတဲ့ လမ်းမကြီးပေါ်က မြို့တစ်မြို့ရဲ့ မြင်ကွင်း၊ ဆိုင်ကယ်စီးနေတဲ့ လူတစ်ယောက်၊ ရောင်စုံမီးအလင်းရောင်များနဲ့..."
+                            class="w-full h-32 p-4 rounded-xl resize-none glass border border-gray-700 text-gray-200 input-focus focus:outline-none transition duration-300 placeholder-gray-500"
+                            placeholder="Example: A cityscape at night with a full moon, a person riding a motorcycle, colorful neon lights..."
                         ></textarea>
                     </div>
                     <div class="flex justify-center mt-6">
                         <button
                             id="image-generate-button"
-                            class="bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transform transition-transform duration-300 active:scale-95"
+                            class="btn-secondary text-white font-bold py-4 px-8 rounded-full shadow-lg transform transition-all duration-300 flex items-center"
                         >
-                            ပုံဖန်တီးပါ
+                            <i class="fas fa-image mr-2"></i>
+                            Generate Image
                         </button>
                     </div>
                 </div>
                 <div id="image-loading-indicator" class="mt-8 flex justify-center hidden">
                     <div class="spinner"></div>
                 </div>
-                <div id="image-result-container" class="mt-8 p-6 bg-gray-700 rounded-xl border border-gray-600 shadow-inner hidden">
-                    <h2 class="text-xl sm:text-2xl font-semibold mb-4 text-gray-300 text-center">ဖန်တီးထားသောပုံ</h2>
+                <div id="image-result-container" class="mt-8 p-6 glass rounded-xl border border-gray-700 shadow-inner hidden">
+                    <h2 class="text-2xl font-semibold mb-4 text-gray-300 text-center flex items-center justify-center">
+                        <i class="fas fa-image mr-2 text-cyan-400"></i>
+                        Generated Image
+                    </h2>
                     <div class="image-container">
                            <img id="generated-image" src="" alt="Generated image" class="hidden">
                            <p id="image-error-text" class="text-red-400 text-center hidden"></p>
                     </div>
                 </div>
             </div>`;
-        }
-
-        // Function to create the About page content
-        function createAboutPage() {
-            return `
-           
-            `;
-        }
-
-        // Function to create the Services page content
-        function createServicesPage() {
-            return `
-            
-                </div>
-            </div>
-            `;
         }
 
         // --- Routing and Event Handling ---
@@ -489,10 +708,6 @@
                 contentHTML = createHomePage();
             } else if (section === 'image-generator') {
                 contentHTML = createImageGeneratorPage();
-            } else if (section === 'about') {
-                contentHTML = createAboutPage();
-            } else if (section === 'services') {
-                contentHTML = createServicesPage();
             }
 
             mainContent.innerHTML = contentHTML;
@@ -508,11 +723,14 @@
                     tempTextArea.select();
                     try {
                         document.execCommand('copy');
-                        copyButton.textContent = 'ကူးယူပြီးပါပြီ။';
-                        setTimeout(() => copyButton.textContent = 'ကူးယူပါ', 2000);
+                        const copyButton = document.getElementById('copy-button');
+                        copyButton.innerHTML = '<i class="fas fa-check mr-2"></i> Copied!';
+                        setTimeout(() => {
+                            copyButton.innerHTML = '<i class="fas fa-copy mr-2"></i> Copy Text';
+                        }, 2000);
                     } catch (err) {
-                        console.error('စာသားကူးယူ၍ မရပါ:', err);
-                        copyButton.textContent = 'ကူးယူ၍ မရပါ';
+                        console.error('Failed to copy text:', err);
+                        copyButton.innerHTML = '<i class="fas fa-times mr-2"></i> Copy Failed';
                     } finally {
                         document.body.removeChild(tempTextArea);
                     }
@@ -534,6 +752,9 @@
         document.addEventListener('DOMContentLoaded', () => {
             const initialSection = window.location.hash.substring(1) || 'home';
             loadContent(initialSection);
+            
+            // Add animation to the main content
+            mainContent.classList.add('animate-fade-in-up');
         });
 
         // Handle navigation clicks
@@ -542,18 +763,35 @@
                 event.preventDefault();
                 const section = event.target.getAttribute('href').substring(1);
                 window.history.pushState({}, '', `#${section}`);
-                loadContent(section);
                 
-                // Close mobile menu after clicking a link
-                if (navMenu.classList.contains('flex')) {
-                    navMenu.classList.remove('flex');
-                    navMenu.classList.add('hidden');
-                }
+                // Add exit animation before loading new content
+                mainContent.classList.remove('animate-fade-in-up');
+                mainContent.classList.add('animate__animated', 'animate__fadeOut');
+                
+                setTimeout(() => {
+                    loadContent(section);
+                    mainContent.classList.remove('animate__animated', 'animate__fadeOut');
+                    mainContent.classList.add('animate-fade-in-up');
+                    
+                    // Close mobile menu after clicking a link
+                    if (navMenu.classList.contains('flex')) {
+                        navMenu.classList.remove('flex');
+                        navMenu.classList.add('hidden');
+                    }
+                }, 300);
             });
         });
         
         // Handle hamburger button click for mobile menu
-        
+        hamburgerButton.addEventListener('click', () => {
+            if (navMenu.classList.contains('hidden')) {
+                navMenu.classList.remove('hidden');
+                navMenu.classList.add('flex', 'animate__animated', 'animate__fadeInDown');
+            } else {
+                navMenu.classList.add('hidden');
+                navMenu.classList.remove('flex', 'animate__animated', 'animate__fadeInDown');
+            }
+        });
 
     </script>
 </body>
